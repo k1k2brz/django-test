@@ -5,6 +5,7 @@ import Label from "../common/Label";
 import Input from "../common/Input";
 import Button from "../common/Button";
 import Textarea from "../common/Textarea";
+import { getCookie } from "@/app/_utils/cookie";
 
 export default function AddItemForm() {
   const [name, setName] = useState("");
@@ -18,9 +19,14 @@ export default function AddItemForm() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
         },
         body: JSON.stringify({ name, description }),
       });
+      if (!res.ok) {
+        throw new Error("아이템 추가 실패");
+      }
+
       const data = await res.json();
 
       setName("");
