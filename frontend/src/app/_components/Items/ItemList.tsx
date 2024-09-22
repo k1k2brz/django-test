@@ -4,6 +4,7 @@ import { useState } from "react";
 import Button from "../common/Button";
 import Input from "../common/Input";
 import Textarea from "../common/Textarea";
+import { getCookie } from "@/app/_utils/cookie";
 
 interface Item {
   id: number;
@@ -11,7 +12,17 @@ interface Item {
   description: string;
 }
 
-export default function ItemList({ items }: { items: Item[] }) {
+interface ItemListProps {
+  items: Item[];
+  onItemDeleted: (id: number) => void;
+  onItemUpdated: (updatedItem: Item) => void;
+}
+
+export default function ItemList({
+  items,
+  onItemDeleted,
+  onItemUpdated,
+}: ItemListProps) {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -28,17 +39,22 @@ export default function ItemList({ items }: { items: Item[] }) {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken"),
         },
         body: JSON.stringify({ name, description }),
+        credentials: "include",
       });
 
-      if (res.ok) {
-        alert("아이템이 업데이트되었습니다.");
-        setEditingId(null);
+      if (!res.ok) {
+        throw new Error("아이템 업데이트 실패");
       }
+
+      const updatedItem = await res.json();
+      onItemUpdated(updatedItem); // 업데이트된 아이템 전달
+      setEditingId(null);
     } catch (error) {
       console.error(error);
-      alert("아이템을 업데이트할 수 없습니다.");
+      alert("아이템을 업데이트 할 수 없습니다.");
     }
   };
 
@@ -46,10 +62,14 @@ export default function ItemList({ items }: { items: Item[] }) {
     try {
       const res = await fetch(`http://localhost:8000/api/items/delete/${id}/`, {
         method: "DELETE",
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken"),
+        },
+        credentials: "include",
       });
 
       if (res.ok) {
-        alert("아이템이 삭제되었습니다.");
+        onItemDeleted(id); // 삭제된 아이템 ID 전달
       }
     } catch (error) {
       console.error(error);

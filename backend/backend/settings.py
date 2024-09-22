@@ -36,9 +36,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', # CORS 관련
-    'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',  # 세션 활성화
     'django.contrib.auth.middleware.AuthenticationMiddleware', # 인증 활성화
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -102,6 +102,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# CORS 설정
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000', # 개발 환경 기준 배포시 변경 (.env로 관리)
+]
+
+# CSRF 설정
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -114,7 +124,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True  # 세션 쿠키와 함께 CORS 허용
+SESSION_COOKIE_SECURE = False  # 개발 환경에서만 False, 배포 환경에서는 True로 설정해야함
+CSRF_COOKIE_SECURE = False     # 개발 환경에서만 False
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 
 # Static files (CSS, JavaScript, Images)

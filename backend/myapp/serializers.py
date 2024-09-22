@@ -7,3 +7,4 @@ class ItemSerializer(serializers.ModelSerializer):
     class Meta: #  직렬화 대상 모델과 직렬화할 필드를 지정
         model = Item
         fields = '__all__'
+        read_only_fields = ['user']

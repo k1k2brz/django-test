@@ -1,4 +1,5 @@
 import { getCookie } from "@/app/_utils/cookie";
+import Button from "../common/Button";
 
 export default function Logout({ onLogout }: { onLogout: () => void }) {
   const handleLogout = async () => {
@@ -21,5 +22,5 @@ export default function Logout({ onLogout }: { onLogout: () => void }) {
     }
   };
 
-  return <button onClick={handleLogout}>로그아웃</button>;
+  return <Button onClick={handleLogout}>로그아웃</Button>;
 }
